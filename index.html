@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calendario 3x4 Pro - Corregido</title>
+    <title>Calendario 3x4 Pro - Responsive</title>
     <style>
         :root {
             --primary: #2c3e50;
@@ -14,6 +14,10 @@
             --card-bg: #ffffff;
         }
 
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, sans-serif;
             background-color: var(--bg);
@@ -22,21 +26,57 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            height: 100vh;
-            box-sizing: border-box;
+            min-height: 100vh;
         }
 
-        h1 { color: var(--primary); margin: 5px 0; font-size: 1.8rem; }
+        h1 { 
+            color: var(--primary); 
+            margin: 5px 0 15px 0; 
+            font-size: clamp(1.2rem, 4vw, 1.8rem);
+            text-align: center;
+        }
 
-        /* Vista Año 3x4 */
+        /* Vista Año 3x4 - Responsive */
         .year-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             grid-template-rows: repeat(3, 1fr);
             gap: 12px;
             width: 98vw;
-            flex-grow: 1; /* Ocupa el espacio disponible */
+            flex-grow: 1;
             max-width: 1600px;
+        }
+
+        /* Tablets y pantallas medianas */
+        @media (max-width: 1024px) {
+            .year-grid {
+                grid-template-columns: repeat(3, 1fr);
+                grid-template-rows: repeat(4, 1fr);
+                gap: 10px;
+            }
+        }
+
+        /* Celulares horizontales y tablets pequeñas */
+        @media (max-width: 768px) {
+            .year-grid {
+                grid-template-columns: repeat(2, 1fr);
+                grid-template-rows: repeat(6, 1fr);
+                gap: 8px;
+            }
+        }
+
+        /* Celulares verticales */
+        @media (max-width: 480px) {
+            .year-grid {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto;
+                gap: 12px;
+                width: 95vw;
+            }
+            
+            body {
+                padding: 5px;
+            }
         }
 
         .month-card {
@@ -48,6 +88,12 @@
             display: flex;
             flex-direction: column;
             border: 1px solid #ccc;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .month-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
 
         .month-header-bar {
@@ -58,22 +104,34 @@
             font-weight: bold;
             text-transform: uppercase;
             border-bottom: 3px solid var(--highlight);
+            font-size: clamp(0.8rem, 2vw, 1rem);
         }
 
         .mini-calendar {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            font-size: 0.7rem;
+            font-size: clamp(0.6rem, 1.5vw, 0.7rem);
             gap: 1px;
             padding: 5px;
             flex-grow: 1;
         }
 
-        .weekday-label { font-weight: bold; color: var(--secondary); text-align: center; }
+        .weekday-label { 
+            font-weight: bold; 
+            color: var(--secondary); 
+            text-align: center; 
+            padding: 2px 0;
+        }
 
-        .mini-day { text-align: center; display: flex; align-items: center; justify-content: center; height: 20px; }
+        .mini-day { 
+            text-align: center; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            height: clamp(18px, 3vw, 20px);
+        }
 
-        /* Círculo verde */
+        /* Círculo verde - responsive */
         .today-circle {
             background-color: var(--highlight);
             color: white !important;
@@ -81,8 +139,8 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 20px;
-            height: 20px;
+            width: clamp(18px, 3vw, 20px);
+            height: clamp(18px, 3vw, 20px);
             font-weight: bold;
         }
 
@@ -90,13 +148,15 @@
         .modal {
             display: none;
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
             background: white;
             z-index: 1000;
             flex-direction: column;
             padding: 20px;
-            box-sizing: border-box;
-            overflow-y: auto; /* Permite scroll si el mes es muy largo */
+            overflow-y: auto;
         }
 
         .modal-nav {
@@ -106,6 +166,14 @@
             width: 100%;
             max-width: 1000px;
             margin: 0 auto 15px auto;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .modal-nav h2 {
+            font-size: clamp(1.5rem, 5vw, 2rem);
+            color: var(--primary);
+            margin: 0;
         }
 
         .full-month-grid {
@@ -115,26 +183,44 @@
             width: 100%;
             max-width: 1000px;
             margin: 0 auto;
-            padding-bottom: 20px; /* Margen final para que no corte el último día */
+            padding-bottom: 20px;
+        }
+
+        /* Responsive para vista mensual completa */
+        @media (max-width: 768px) {
+            .full-month-grid {
+                gap: 5px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .full-month-grid {
+                gap: 3px;
+            }
+            
+            .modal {
+                padding: 10px;
+            }
         }
 
         .day-header-full {
             background: var(--primary);
             color: white;
             text-align: center;
-            padding: 10px;
+            padding: clamp(6px, 2vw, 10px);
             border-radius: 5px;
-            font-size: 0.9rem;
+            font-size: clamp(0.7rem, 2vw, 0.9rem);
+            font-weight: bold;
         }
 
         .day-box-full {
             border: 1px solid #eee;
             background: #fafafa;
             border-radius: 5px;
-            padding: 10px;
-            font-size: 1.4rem;
+            padding: clamp(6px, 2vw, 10px);
+            font-size: clamp(1rem, 3vw, 1.4rem);
             font-weight: bold;
-            min-height: 80px; /* Asegura tamaño del cuadro */
+            min-height: clamp(60px, 15vw, 80px);
             display: flex;
             flex-direction: column;
         }
@@ -143,17 +229,37 @@
             background-color: var(--danger);
             color: white;
             border: none;
-            padding: 12px 24px;
+            padding: clamp(8px, 2vw, 12px) clamp(16px, 3vw, 24px);
             border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
             text-transform: uppercase;
+            font-size: clamp(0.8rem, 2vw, 1rem);
+            white-space: nowrap;
+            transition: background-color 0.2s;
+        }
+
+        .btn-red:hover {
+            background-color: #b71c1c;
         }
 
         .full-month-grid .today-circle {
-            width: 40px;
-            height: 40px;
-            font-size: 1.5rem;
+            width: clamp(30px, 6vw, 40px);
+            height: clamp(30px, 6vw, 40px);
+            font-size: clamp(1rem, 3vw, 1.5rem);
+        }
+
+        /* Mejoras adicionales para celulares */
+        @media (max-width: 480px) {
+            .day-header-full {
+                font-size: 0.65rem;
+                padding: 4px;
+            }
+            
+            .btn-red {
+                padding: 8px 12px;
+                font-size: 0.85rem;
+            }
         }
     </style>
 </head>
@@ -164,7 +270,7 @@
 
     <div id="monthModal" class="modal">
         <div class="modal-nav">
-            <h2 id="modalMonthName" style="font-size: 2rem; color: var(--primary); margin: 0;"></h2>
+            <h2 id="modalMonthName"></h2>
             <button class="btn-red" onclick="closeModal()">← Volver</button>
         </div>
         <div id="fullMonthGrid" class="full-month-grid"></div>
@@ -216,7 +322,7 @@
         function showMonthFull(idx) {
             const modal = document.getElementById('monthModal');
             const grid = document.getElementById('fullMonthGrid');
-            document.getElementById('modalMonthName').innerText = `${monthNames[idx]}`;
+            document.getElementById('modalMonthName').innerText = `${monthNames[idx]} ${y}`;
             grid.innerHTML = '';
 
             fullDayLabels.forEach(label => grid.innerHTML += `<div class="day-header-full">${label}</div>`);
@@ -237,7 +343,7 @@
             }
             
             modal.style.display = 'flex';
-            window.scrollTo(0,0); // Asegura empezar arriba
+            window.scrollTo(0,0);
         }
 
         function closeModal() {
